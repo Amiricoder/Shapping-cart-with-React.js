@@ -5,7 +5,12 @@ import { useProducts } from "../context/ProductProvider";
 import styles from "./ProductsPage.module.css";
 import { useEffect, useState } from "react";
 import { FaListUl } from "react-icons/fa";
-import { filterProducts, searchProducts } from "../helper/helper";
+import {
+  createQueryObject,
+  filterProducts,
+  searchProducts,
+} from "../helper/helper";
+import { useSearchParams } from "react-router-dom";
 function ProductsPage() {
   const products = useProducts(); //all data
 
@@ -13,25 +18,28 @@ function ProductsPage() {
   const [search, setSearch] = useState("");
   const [query, setQuery] = useState({}); //filter and search
 
+  const [searhParams, setSearchParams] = useSearchParams();
+
   useEffect(() => {
     setDisplayed(products);
   }, [products]);
 
   useEffect(() => {
+    setSearchParams(query);
     let finalProducts = searchProducts(products, query.search);
     finalProducts = filterProducts(finalProducts, query.category);
     setDisplayed(finalProducts);
   }, [query]);
 
   const searchHandler = () => {
-    setQuery((query) => ({ ...query, search: search }));
+    setQuery((query) => createQueryObject(query, { search: search }));
   };
 
   const categoryHandeler = (e) => {
     const tagName = e.target.tagName;
     if (tagName !== "LI") return;
     const category = e.target.innerText.toLowerCase();
-    setQuery((query) => ({ ...query, category: category }));
+    setQuery((query) => createQueryObject(query, { category: category }));
   };
 
   return (
