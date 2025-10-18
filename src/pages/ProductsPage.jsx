@@ -5,6 +5,7 @@ import { useProducts } from "../context/ProductProvider";
 import styles from "./ProductsPage.module.css";
 import { useEffect, useState } from "react";
 import { FaListUl } from "react-icons/fa";
+import { filterProducts, searchProducts } from "../helper/helper";
 function ProductsPage() {
   const products = useProducts(); //all data
 
@@ -17,10 +18,12 @@ function ProductsPage() {
   }, [products]);
 
   useEffect(() => {
-    console.log(query);
+    let finalProducts = searchProducts(products, query.search);
+    finalProducts = filterProducts(finalProducts, query.category);
+    setDisplayed(finalProducts);
   }, [query]);
 
-  const serachHandler = () => {
+  const searchHandler = () => {
     setQuery((query) => ({ ...query, search: search }));
   };
 
@@ -40,7 +43,7 @@ function ProductsPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value.toLowerCase().trim())}
         />
-        <button onClick={serachHandler}>
+        <button onClick={searchHandler}>
           <ImSearch />
         </button>
       </div>
